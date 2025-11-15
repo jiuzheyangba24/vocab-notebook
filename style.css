@@ -1,0 +1,273 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+}
+
+.word-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 1rem 0;
+}
+
+.word {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.info {
+
+}
+
+.pronunciation {
+    color: #888;
+}
+
+.definition.hidden {
+    display: none;
+}
+
+.definition {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.sentences,
+.synonyms {
+    margin-top: 10px;
+}
+
+.sentences h3,
+.synonyms h3 {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.sentences p,
+.synonyms p {
+    font-size: 1em;
+    margin: 0;
+}
+
+.buttons button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.add-word-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#new-word-input {
+    width: 60%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#add-word-btn {
+    padding: 10px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#add-word-btn:hover {
+    background-color: #218838;
+}
+
+.word-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 1rem 0;
+}
+
+.word {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.info {
+
+}
+
+.pronunciation {
+    color: #888;
+}
+
+.definition.hidden {
+    display: none;
+}
+
+.definition {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.sentences,
+.synonyms {
+    margin-top: 10px;
+}
+
+.sentences h3,
+.synonyms h3 {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.sentences p,
+.synonyms p {
+    font-size: 1em;
+    margin: 0;
+}
+
+.buttons button {
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+#delete-word {
+    background-color: #dc3545;
+}
+
+#delete-word:hover {
+    background-color: #c82333;
+}
+
+#show-all-words {
+    margin-top: 10px;
+    background-color: #28a745;
+}
+
+#show-all-words:hover {
+    background-color: #218838;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#all-words-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#all-words-list li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#test-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#test-word {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#options-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+.option-btn {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.option-btn:hover {
+    background-color: #e0e0e0;
+}
+
+#next-question-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+
+#test-result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
