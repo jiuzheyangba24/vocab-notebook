@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const importBtn = document.getElementById('import-words');
     const importFileInput = document.getElementById('import-file');
 
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+    }
+
     let vocabulary = [];
     let currentIndex = 0;
     let score = 0;
