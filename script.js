@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prev-word');
     const toggleBtn = document.getElementById('toggle-definition');
     const nextBtn = document.getElementById('next-word');
+    const exportBtn = document.getElementById('export-words');
+    const importBtn = document.getElementById('import-words');
+    const importFileInput = document.getElementById('import-file');
 
     let vocabulary = [];
     let currentIndex = 0;
@@ -38,16 +41,29 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTestMode = 'en-to-cn';
     let useWrongOnly = false; // 是否仅从错题本抽题
     
-    // 从后端API加载单词
     async function loadVocabulary() {
         try {
-            const response = await fetch('http://localhost:3000/api/words');
-            vocabulary = await response.json();
+            const stored = localStorage.getItem('vocabulary');
+            if (stored) {
+                vocabulary = JSON.parse(stored) || [];
+            } else {
+                try {
+                    const resp = await fetch('vocabulary.json');
+                    const data = await resp.json();
+                    vocabulary = Array.isArray(data) ? data : [];
+                    localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+                } catch (_) {
+                    vocabulary = [];
+                    localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+                }
+            }
             updateWordCount();
             showWord();
-        } catch (error) {
-            console.error('Error loading vocabulary:', error);
+        } catch (_) {
             vocabulary = [];
+            localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+            updateWordCount();
+            showWord();
         }
     }
 
@@ -93,18 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function updateWordCount() {
-        try {
-            const response = await fetch('http://localhost:3000/api/words/count');
-            const data = await response.json();
-            wordCountElement.textContent = `单词数量: ${data.count}`;
-            
-            // 如果有错题，显示查看错题按钮
-            if (wrongQuestions.length > 0) {
-                document.getElementById('view-wrong-questions').style.display = 'inline-block';
-            }
-        } catch (error) {
-            console.error('Error getting word count:', error);
-            wordCountElement.textContent = `单词数量: ${vocabulary.length}`;
+        wordCountElement.textContent = String(vocabulary.length);
+        if (wrongQuestions.length > 0) {
+            document.getElementById('view-wrong-questions').style.display = 'inline-block';
         }
     }
 
@@ -187,150 +194,103 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function startTest() {
-        try {
-            const response = await fetch('http://localhost:3000/api/words/count');
-            const data = await response.json();
-            
-            if (data.count < 4) {
-                alert('至少需要4个单词才能开始测试');
+        const count = vocabulary.length;
+        if (count < 4) {
+            alert('至少需要4个单词才能开始测试');
+            return;
+        }
+        const testMode = document.getElementById('test-mode').value;
+        const testQuantity = parseInt(document.getElementById('test-quantity').value) || 10;
+        useWrongOnly = document.getElementById('use-wrong-only')?.checked || false;
+        mainContainer.classList.add('hidden');
+        testContainer.classList.remove('hidden');
+        score = 0;
+        testedWords = [];
+        currentQuestionNumber = 0;
+        if (useWrongOnly) {
+            const uniqueWrongWords = Array.from(new Set((JSON.parse(localStorage.getItem('wrongQuestions')) || []).map(q => q.word)));
+            const wrongCount = uniqueWrongWords.length;
+            if (wrongCount === 0) {
+                alert('错题本为空，无法进行错题测试。请先进行正常测试或添加错题。');
+                mainContainer.classList.remove('hidden');
+                testContainer.classList.add('hidden');
                 return;
             }
-
-            // 获取测试设置
-            const testMode = document.getElementById('test-mode').value;
-            const testQuantity = parseInt(document.getElementById('test-quantity').value) || 10;
-            useWrongOnly = document.getElementById('use-wrong-only')?.checked || false;
-            
-            mainContainer.classList.add('hidden');
-            testContainer.classList.remove('hidden');
-            
-            score = 0;
-            testedWords = [];
-            currentQuestionNumber = 0;
-            if (useWrongOnly) {
-                // 统计错题本中唯一单词数量
-                const uniqueWrongWords = Array.from(new Set((JSON.parse(localStorage.getItem('wrongQuestions')) || []).map(q => q.word)));
-                const wrongCount = uniqueWrongWords.length;
-                if (wrongCount === 0) {
-                    alert('错题本为空，无法进行错题测试。请先进行正常测试或添加错题。');
-                    mainContainer.classList.remove('hidden');
-                    testContainer.classList.add('hidden');
-                    return;
-                }
-                totalQuestions = Math.min(testQuantity, wrongCount);
-            } else {
-                totalQuestions = Math.min(testQuantity, data.count);
-            }
-            currentTestMode = testMode;
-            
-            updateProgress();
-            await generateQuestion();
-        } catch (error) {
-            console.error('Error checking word count:', error);
-            alert('检查单词数量时出错');
+            totalQuestions = Math.min(testQuantity, wrongCount);
+        } else {
+            totalQuestions = Math.min(testQuantity, count);
         }
+        currentTestMode = testMode;
+        updateProgress();
+        await generateQuestion();
     }
 
     let currentTestWord;
 
     async function generateQuestion() {
-        try {
-            // 从后端获取所有单词
-            const response = await fetch('http://localhost:3000/api/words');
-            const allWords = await response.json();
-            
-            // 构建题库（支持仅错题）
-            let pool = allWords;
-            if (useWrongOnly) {
-                const wrongSet = new Set((JSON.parse(localStorage.getItem('wrongQuestions')) || []).map(q => q.word));
-                pool = allWords.filter(w => wrongSet.has(w.headWord));
-            }
-
-            // 选择题需要至少4个选项来源
-            const multipleChoiceModes = ['en-to-cn', 'cn-to-en', 'fill-blank'];
-            if (multipleChoiceModes.includes(currentTestMode) && pool.length < 4) {
-                alert('题库不足4个单词，无法进行该测试模式。请添加生词或取消仅测错题。');
-                mainContainer.classList.remove('hidden');
-                testContainer.classList.add('hidden');
-                return;
-            }
-
-            // 随机选择一个未被测试过的单词作为问题
-            const available = pool.filter(w => !testedWords.includes(w.headWord));
-            if (available.length === 0) {
-                // 没有可用题目（可能用户设置的题目数量超过可用池）
-                nextQuestion();
-                return;
-            }
-            currentTestWord = available[Math.floor(Math.random() * available.length)];
-            
-            // 根据测试模式生成不同的问题
-            switch (currentTestMode) {
-                case 'en-to-cn':
-                    // 英译中：显示英文单词，选择中文释义
+        const allWords = vocabulary.slice();
+        let pool = allWords;
+        if (useWrongOnly) {
+            const wrongSet = new Set((JSON.parse(localStorage.getItem('wrongQuestions')) || []).map(q => q.word));
+            pool = allWords.filter(w => wrongSet.has(w.headWord));
+        }
+        const multipleChoiceModes = ['en-to-cn', 'cn-to-en', 'fill-blank'];
+        if (multipleChoiceModes.includes(currentTestMode) && pool.length < 4) {
+            alert('题库不足4个单词，无法进行该测试模式。请添加生词或取消仅测错题。');
+            mainContainer.classList.remove('hidden');
+            testContainer.classList.add('hidden');
+            return;
+        }
+        const available = pool.filter(w => !testedWords.includes(w.headWord));
+        if (available.length === 0) {
+            nextQuestion();
+            return;
+        }
+        currentTestWord = available[Math.floor(Math.random() * available.length)];
+        switch (currentTestMode) {
+            case 'en-to-cn':
+                testWordElement.textContent = currentTestWord.headWord;
+                generateDefinitionOptions(allWords, currentTestWord.definition);
+                break;
+            case 'cn-to-en':
+                testWordElement.textContent = currentTestWord.definition;
+                generateWordOptions(allWords, currentTestWord.headWord);
+                break;
+            case 'fill-blank':
+                if (currentTestWord.sentences && currentTestWord.sentences.length > 0) {
+                    const sentence = currentTestWord.sentences[0];
+                    const blankSentence = sentence.replace(currentTestWord.headWord, '________');
+                    testWordElement.textContent = blankSentence;
+                    generateWordOptions(allWords, currentTestWord.headWord);
+                } else {
                     testWordElement.textContent = currentTestWord.headWord;
                     generateDefinitionOptions(allWords, currentTestWord.definition);
-                    break;
-                
-                case 'cn-to-en':
-                    // 中译英：显示中文释义，选择英文单词
-                    testWordElement.textContent = currentTestWord.definition;
-                    generateWordOptions(allWords, currentTestWord.headWord);
-                    break;
-                
-                case 'fill-blank':
-                    // 填空测试：显示带下划线的句子
-                    if (currentTestWord.sentences && currentTestWord.sentences.length > 0) {
-                        const sentence = currentTestWord.sentences[0];
-                        const blankSentence = sentence.replace(currentTestWord.headWord, '________');
-                        testWordElement.textContent = blankSentence;
-                        generateWordOptions(allWords, currentTestWord.headWord);
-                    } else {
-                        // 如果没有例句，回退到英译中模式
-                        testWordElement.textContent = currentTestWord.headWord;
-                        generateDefinitionOptions(allWords, currentTestWord.definition);
+                }
+                break;
+            case 'spelling':
+                testWordElement.textContent = `释义: ${currentTestWord.definition}`;
+                testWordElement.innerHTML += `<br><small>（请输入正确的英文单词）</small>`;
+                optionsContainer.innerHTML = `
+                    <input type="text" id="spelling-input" placeholder="输入英文单词" style="padding: 10px; font-size: 16px; width: 200px;">
+                    <button id="check-spelling" style="padding: 10px 20px; font-size: 16px; margin-left: 10px;">检查</button>
+                `;
+                const checkButton = document.getElementById('check-spelling');
+                const spellingInput = document.getElementById('spelling-input');
+                spellingInput.focus();
+                checkButton.addEventListener('click', () => {
+                    const userInput = spellingInput.value.trim().toLowerCase();
+                    const correctWord = currentTestWord.headWord.toLowerCase();
+                    checkAnswer(userInput, correctWord, currentTestWord);
+                });
+                spellingInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        checkButton.click();
                     }
-                    break;
-                
-                case 'spelling':
-                    // 单词拼写模式
-                    testWordElement.textContent = `释义: ${currentTestWord.definition}`;
-                    testWordElement.innerHTML += `<br><small>（请输入正确的英文单词）</small>`;
-                    
-                    // 创建拼写输入框
-                    optionsContainer.innerHTML = `
-                        <input type="text" id="spelling-input" placeholder="输入英文单词" style="padding: 10px; font-size: 16px; width: 200px;">
-                        <button id="check-spelling" style="padding: 10px 20px; font-size: 16px; margin-left: 10px;">检查</button>
-                    `;
-                    
-                    const checkButton = document.getElementById('check-spelling');
-                    const spellingInput = document.getElementById('spelling-input');
-                    
-                    // 自动聚焦到输入框
-                    spellingInput.focus();
-                    
-                    checkButton.addEventListener('click', () => {
-                        const userInput = spellingInput.value.trim().toLowerCase();
-                        const correctWord = currentTestWord.headWord.toLowerCase();
-                        checkAnswer(userInput, correctWord, currentTestWord);
-                    });
-                    
-                    // 支持回车键提交
-                    spellingInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            checkButton.click();
-                        }
-                    });
-                    break;
-            }
-            
-            currentQuestionNumber++;
-            updateProgress();
-            
-        } catch (error) {
-            console.error('Error getting words for test:', error);
-            alert('获取测试单词时出错');
+                });
+                break;
         }
+        currentQuestionNumber++;
+        updateProgress();
     }
 
     function generateDefinitionOptions(allWords, correctDefinition) {
@@ -457,30 +417,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (confirm('确定要删除这个单词吗？')) {
             const wordToDelete = vocabulary[currentIndex];
-            
-            try {
-                const response = await fetch(`http://localhost:3000/api/words/${wordToDelete.headWord}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    vocabulary.splice(currentIndex, 1);
-                    
-                    if (vocabulary.length === 0) {
-                        currentIndex = 0;
-                        showEmptyState();
-                    } else {
-                        currentIndex = Math.min(currentIndex, vocabulary.length - 1);
-                        showWord();
-                    }
-                    updateWordCount();
-                } else {
-                    alert('删除单词失败');
-                }
-            } catch (error) {
-                console.error('Error deleting word:', error);
-                alert('删除单词时出错');
+            const byId = wordToDelete && wordToDelete.id != null;
+            if (byId) {
+                vocabulary = vocabulary.filter(w => w.id !== wordToDelete.id);
+            } else {
+                const hw = (wordToDelete.headWord || '').toLowerCase();
+                vocabulary = vocabulary.filter(w => (w.headWord || '').toLowerCase() !== hw);
             }
+            localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+            if (vocabulary.length === 0) {
+                currentIndex = 0;
+                showWord();
+            } else {
+                currentIndex = Math.min(currentIndex, vocabulary.length - 1);
+                showWord();
+            }
+            updateWordCount();
         }
     }
 
@@ -502,29 +454,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     pronunciation: wordData.ukphone || wordData.usphone || '',
                     definition: wordData.translations?.[0]?.tran_cn || '无释义',
                     sentences: wordData.sentences?.map(s => `${s.s_content} - ${s.s_cn}`) || [],
-                    synonyms: wordData.synonyms?.flatMap(s => s.Hwds.map(h => h.word)) || []
+                    synonyms: wordData.synonyms?.flatMap(s => s.Hwds.map(h => h.word)) || [],
+                    id: Date.now(),
+                    createdAt: new Date().toISOString()
                 };
-
-                // 发送到后端API
-                const apiResponse = await fetch('http://localhost:3000/api/words', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(newWordEntry)
-                });
-
-                if (apiResponse.ok) {
-                    const addedWord = await apiResponse.json();
-                    vocabulary.push(addedWord);
-                    currentIndex = vocabulary.length - 1;
-                    showWord();
-                    updateWordCount();
-                    newWordInput.value = '';
-                } else {
-                    const errorData = await apiResponse.json();
-                    alert(errorData.error || '添加单词时出错');
+                const exists = vocabulary.some(w => (w.headWord || '').toLowerCase() === newWordEntry.headWord.toLowerCase());
+                if (exists) {
+                    alert('该单词已存在');
+                    return;
                 }
+                vocabulary.push(newWordEntry);
+                localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+                currentIndex = vocabulary.length - 1;
+                showWord();
+                updateWordCount();
+                newWordInput.value = '';
             } else {
                 alert('找不到该单词');
             }
@@ -532,6 +476,55 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error adding word:', error);
             alert('添加单词时出错');
         }
+    }
+
+    function exportVocabulary() {
+        const payload = { version: 1, exportedAt: new Date().toISOString(), words: vocabulary };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vocabulary-${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function importVocabularyFromFile(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const parsed = JSON.parse(reader.result);
+                const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed.words) ? parsed.words : [];
+                if (!Array.isArray(list) || list.length === 0) {
+                    alert('文件中未找到词库数据');
+                    return;
+                }
+                const normalized = list.filter(w => w && typeof w.headWord === 'string' && w.headWord.trim() !== '').map(w => ({
+                    id: w.id ?? Date.now() + Math.floor(Math.random() * 1000),
+                    headWord: w.headWord,
+                    pronunciation: w.pronunciation || '',
+                    definition: w.definition || '',
+                    sentences: Array.isArray(w.sentences) ? w.sentences : [],
+                    synonyms: Array.isArray(w.synonyms) ? w.synonyms : [],
+                    createdAt: w.createdAt || new Date().toISOString()
+                }));
+                const map = new Map(vocabulary.map(w => [String(w.headWord).toLowerCase(), w]));
+                normalized.forEach(w => {
+                    const k = w.headWord.toLowerCase();
+                    if (!map.has(k)) map.set(k, w);
+                });
+                vocabulary = Array.from(map.values());
+                localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+                currentIndex = Math.min(currentIndex, Math.max(0, vocabulary.length - 1));
+                showWord();
+                updateWordCount();
+                alert(`导入完成，合并后共有 ${vocabulary.length} 条`);
+            } catch (e) {
+                alert('导入失败：不是合法的 JSON 文件');
+            }
+        };
+        reader.onerror = () => alert('读取文件失败');
+        reader.readAsText(file, 'utf-8');
     }
 
     addWordBtn.addEventListener('click', addWord);
@@ -543,6 +536,13 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', closeAllWords);
     startTestBtn.addEventListener('click', startTest);
     nextQuestionBtn.addEventListener('click', nextQuestion);
+    exportBtn.addEventListener('click', exportVocabulary);
+    importBtn.addEventListener('click', () => importFileInput.click());
+    importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) importVocabularyFromFile(file);
+        importFileInput.value = '';
+    });
     
     // 错题本相关事件监听器
     document.getElementById('view-wrong-questions').addEventListener('click', showWrongQuestions);
