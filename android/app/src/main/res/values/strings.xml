@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">vocab-notebook</string>
+    <string name="title_activity_main">vocab-notebook</string>
+    <string name="package_name">com.jiuzheyangba24.vocabnotebook</string>
+    <string name="custom_url_scheme">com.jiuzheyangba24.vocabnotebook</string>
+</resources>
