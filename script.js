@@ -31,6 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const importBtn = document.getElementById('import-words');
     const importFileInput = document.getElementById('import-file');
 
+    // 批量添加相关元素
+    const batchAddBtn = document.getElementById('batch-add-btn');
+    const batchAddModal = document.getElementById('batch-add-modal');
+    const closeBatchModal = document.getElementById('close-batch-modal');
+    const batchWordsInput = document.getElementById('batch-words-input');
+    const startBatchAddBtn = document.getElementById('start-batch-add');
+    const cancelBatchAddBtn = document.getElementById('cancel-batch-add');
+    const batchProgress = document.getElementById('batch-progress');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const batchResults = document.getElementById('batch-results');
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
     }
@@ -44,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalQuestions = 0;
     let currentTestMode = 'en-to-cn';
     let useWrongOnly = false; // 是否仅从错题本抽题
+    let isBatchAdding = false; // 批量添加状态标志
     
     async function loadVocabulary() {
         try {
@@ -531,8 +544,141 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file, 'utf-8');
     }
 
+    // 批量添加单词功能
+    function showBatchAddModal() {
+        batchWordsInput.value = '';
+        batchProgress.classList.add('hidden');
+        batchResults.innerHTML = '';
+        startBatchAddBtn.disabled = false;
+        batchAddModal.style.display = 'block';
+    }
+
+    function closeBatchAddModalFunc() {
+        if (isBatchAdding) {
+            if (!confirm('批量添加正在进行中，确定要取消吗？')) {
+                return;
+            }
+            isBatchAdding = false;
+        }
+        batchAddModal.style.display = 'none';
+    }
+
+    async function startBatchAdd() {
+        const inputText = batchWordsInput.value.trim();
+        if (!inputText) {
+            alert('请输入要添加的单词');
+            return;
+        }
+
+        const words = inputText.split('\n')
+            .map(w => w.trim())
+            .filter(w => w.length > 0)
+            .filter(w => /^[a-zA-Z\s-]+$/.test(w));
+
+        if (words.length === 0) {
+            alert('没有找到有效的英文单词');
+            return;
+        }
+
+        const uniqueWords = [...new Set(words.map(w => w.toLowerCase()))];
+
+        if (confirm(`准备添加 ${uniqueWords.length} 个单词，确定继续吗？`)) {
+            await batchAddWords(uniqueWords);
+        }
+    }
+
+    async function batchAddWords(words) {
+        isBatchAdding = true;
+        startBatchAddBtn.disabled = true;
+        batchProgress.classList.remove('hidden');
+        batchResults.innerHTML = '';
+
+        let successCount = 0;
+        let skipCount = 0;
+        let errorCount = 0;
+
+        for (let i = 0; i < words.length; i++) {
+            if (!isBatchAdding) {
+                addResultItem(`批量添加已取消`, 'result-error');
+                break;
+            }
+
+            const word = words[i];
+            const progress = ((i + 1) / words.length * 100).toFixed(0);
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `正在添加: ${i + 1}/${words.length} - ${word}`;
+
+            try {
+                const exists = vocabulary.some(w =>
+                    (w.headWord || '').toLowerCase() === word.toLowerCase()
+                );
+
+                if (exists) {
+                    addResultItem(`${word} - 已存在，跳过`, 'result-skip');
+                    skipCount++;
+                    await sleep(100);
+                    continue;
+                }
+
+                const response = await fetch(`https://v2.xxapi.cn/api/englishwords?word=${word}`);
+                const data = await response.json();
+
+                if (data.code === 200 && data.data && data.data.word) {
+                    const wordData = data.data;
+                    const newWordEntry = {
+                        headWord: wordData.word,
+                        pronunciation: wordData.ukphone || wordData.usphone || '',
+                        definition: wordData.translations?.[0]?.tran_cn || '无释义',
+                        sentences: wordData.sentences?.map(s => `${s.s_content} - ${s.s_cn}`) || [],
+                        synonyms: wordData.synonyms?.flatMap(s => s.Hwds.map(h => h.word)) || [],
+                        id: Date.now() + i,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    vocabulary.push(newWordEntry);
+                    addResultItem(`${word} - 添加成功`, 'result-success');
+                    successCount++;
+                } else {
+                    addResultItem(`${word} - 未找到`, 'result-error');
+                    errorCount++;
+                }
+
+                await sleep(500);
+
+            } catch (error) {
+                console.error(`Error adding word ${word}:`, error);
+                addResultItem(`${word} - 添加失败`, 'result-error');
+                errorCount++;
+                await sleep(500);
+            }
+        }
+
+        localStorage.setItem('vocabulary', JSON.stringify(vocabulary));
+        updateWordCount();
+        showWord();
+
+        progressText.innerHTML = `
+            <strong>批量添加完成！</strong><br>
+            成功: ${successCount} | 跳过: ${skipCount} | 失败: ${errorCount}
+        `;
+        startBatchAddBtn.disabled = false;
+        isBatchAdding = false;
+    }
+
+    function addResultItem(text, className) {
+        const div = document.createElement('div');
+        div.className = `result-item ${className}`;
+        div.textContent = text;
+        batchResults.appendChild(div);
+        batchResults.scrollTop = batchResults.scrollHeight;
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     addWordBtn.addEventListener('click', addWord);
-    deleteWordBtn.addEventListener('click', deleteWord); // 添加事件监听器
+    deleteWordBtn.addEventListener('click', deleteWord);
     prevBtn.addEventListener('click', prevWord);
     toggleBtn.addEventListener('click', toggleDefinition);
     nextBtn.addEventListener('click', nextWord);
@@ -547,6 +693,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (file) importVocabularyFromFile(file);
         importFileInput.value = '';
     });
+    
+    // 批量添加事件监听器
+    batchAddBtn.addEventListener('click', showBatchAddModal);
+    closeBatchModal.addEventListener('click', closeBatchAddModalFunc);
+    cancelBatchAddBtn.addEventListener('click', closeBatchAddModalFunc);
+    startBatchAddBtn.addEventListener('click', startBatchAdd);
     
     // 错题本相关事件监听器
     document.getElementById('view-wrong-questions').addEventListener('click', showWrongQuestions);

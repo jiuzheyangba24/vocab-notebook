@@ -17,6 +17,7 @@
         <div class="add-word-container">
             <input type="text" id="new-word-input" placeholder="输入新单词">
             <button id="add-word-btn">添加生词</button>
+            <button id="batch-add-btn">批量添加</button>
         </div>
         <div class="word-card">
             <div class="word" id="word"></div>
@@ -71,6 +72,29 @@
                 <span class="close-btn">&times;</span>
                 <h2>所有生词</h2>
                 <ul id="all-words-list"></ul>
+            </div>
+        </div>
+
+        <!-- 批量添加模态框 -->
+        <div class="modal" id="batch-add-modal">
+            <div class="modal-content">
+                <span class="close-btn" id="close-batch-modal">&times;</span>
+                <h2>批量添加单词</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                    每行输入一个单词，系统将自动获取释义和例句
+                </p>
+                <textarea id="batch-words-input" placeholder="请输入单词，每行一个，例如：&#10;hello&#10;world&#10;vocabulary" rows="10"></textarea>
+                <div class="batch-controls">
+                    <button id="start-batch-add" class="primary-btn">开始添加</button>
+                    <button id="cancel-batch-add" class="secondary-btn">取消</button>
+                </div>
+                <div id="batch-progress" class="batch-progress hidden">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <p id="progress-text">正在添加: 0/0</p>
+                    <div id="batch-results" class="batch-results"></div>
+                </div>
             </div>
         </div>
 
