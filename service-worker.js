@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v1.1.0';
 const CACHE_NAME = `vocab-notebook-${CACHE_VERSION}`;
 const ASSETS = [
   './',
