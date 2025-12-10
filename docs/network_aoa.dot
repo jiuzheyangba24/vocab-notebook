@@ -1,0 +1,27 @@
+digraph AOA {
+	dpi=180 rankdir=LR
+	node [fontsize=12 shape=circle]
+	1
+	2
+	3
+	4
+	5
+	6
+	7
+	8
+	9
+	10
+	11
+	1 -> 2 [label="需求分析与范围界定（2天）"]
+	2 -> 3 [label="设计与技术方案（2天）"]
+	3 -> 4 [label="前端实现（迭代一）（2天）"]
+	4 -> 5 [label="PWA 与离线能力完成（1天）"]
+	4 -> 6 [label="导入/导出与错题本完善（1天）"]
+	4 -> 7 [label="Android 工程初始化与同步（1天）"]
+	7 -> 8 [label="调试 APK 构建与真机验证（2天）"]
+	5 -> 9 [label="Dummy（0天）" color=gray style=dashed]
+	6 -> 9 [label="Dummy（0天）" color=gray style=dashed]
+	8 -> 9 [label="Dummy（0天）" color=gray style=dashed]
+	9 -> 10 [label="测试与缺陷修复（2天）"]
+	10 -> 11 [label="部署与验收文档（1天）"]
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四级单词记忆</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f62fe">
+</head>
+<body>
+    <div class="container">
+        <h1>生词本</h1>
+        <div class="word-count-container">
+            <span>生词总数: </span><span id="word-count">0</span>
+        </div>
+        <div class="add-word-container">
+            <input type="text" id="new-word-input" placeholder="输入新单词">
+            <button id="add-word-btn">添加生词</button>
+        </div>
+        <div class="word-card">
+            <div class="word" id="word"></div>
+            <div class="info">
+                <p id="pronunciation" class="pronunciation"></p>
+                <div id="details" class="details">
+                    <p id="definition" class="definition"></p>
+                    <div id="sentences" class="sentences"></div>
+                    <div id="synonyms" class="synonyms"></div>
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <div class="controls">
+                <button id="prev-word">上一个</button>
+                <button id="toggle-definition">查看详情</button>
+                <button id="delete-word">删除</button>
+                <button id="next-word">下一个</button>
+            </div>
+            <button id="show-all-words">查看全部生词</button>
+            <button id="start-test-btn">开始测试</button>
+            <button id="export-words">导出词库</button>
+            <button id="import-words">导入词库</button>
+        <button id="view-wrong-questions" style="display: none;">查看错题</button>
+    </div>
+
+    <div class="test-settings" style="margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+        <h3>测试设置</h3>
+        <div>
+            <label>测试模式：</label>
+            <select id="test-mode">
+                <option value="en-to-cn">英译中</option>
+                <option value="cn-to-en">中译英</option>
+                <option value="fill-blank">填空测试</option>
+                <option value="spelling">单词拼写</option>
+            </select>
+        </div>
+        <div style="margin-top: 5px;">
+            <label>
+                <input type="checkbox" id="use-wrong-only">
+                仅测错题
+            </label>
+        </div>
+        <div style="margin-top: 5px;">
+            <label>题目数量：</label>
+            <input type="number" id="test-quantity" min="4" max="50" value="10">
+        </div>
+    </div>
+
+    <div class="modal" id="all-words-modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2>所有生词</h2>
+                <ul id="all-words-list"></ul>
+            </div>
+        </div>
+
+        <div id="test-container" class="hidden">
+            <div class="test-progress" style="margin-bottom: 15px; font-weight: bold; color: #666;">
+                <span id="progress-text">第 0/0 题</span>
+            </div>
+            <h2 id="test-word"></h2>
+            <div id="options-container"></div>
+            <button id="next-question-btn">下一题</button>
+            <div id="test-result"></div>
+        </div>
+
+        <div class="modal" id="wrong-questions-modal">
+            <div class="modal-content">
+                <span class="close-btn" id="close-wrong-modal">&times;</span>
+                <h2>错题本</h2>
+                <div id="wrong-questions-list"></div>
+                <button id="clear-wrong-questions" style="margin-top: 15px;">清空错题本</button>
+            </div>
+        </div>
+
+        <input type="file" id="import-file" accept="application/json" style="display: none;" />
+        <script src="script.js"></script>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "vocab-notebook",
+  "short_name": "Vocab",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f62fe"
+}
