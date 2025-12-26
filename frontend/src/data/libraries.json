@@ -1,0 +1,74 @@
+{
+    "libraries": [
+        {
+            "id": "chuzhong",
+            "name": "初中词汇",
+            "nameEn": "Junior High",
+            "icon": "🏫",
+            "description": "初中英语必背词汇",
+            "wordCount": 2000,
+            "color": "#10b981",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/1-初中-顺序.json"
+        },
+        {
+            "id": "gaozhong",
+            "name": "高中词汇",
+            "nameEn": "Senior High",
+            "icon": "🎓",
+            "description": "高中英语必背词汇",
+            "wordCount": 3500,
+            "color": "#3b82f6",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/2-高中-顺序.json"
+        },
+        {
+            "id": "cet4",
+            "name": "四级词汇",
+            "nameEn": "CET-4",
+            "icon": "📝",
+            "description": "大学英语四级考试词汇",
+            "wordCount": 4500,
+            "color": "#8b5cf6",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/3-CET4-顺序.json"
+        },
+        {
+            "id": "cet6",
+            "name": "六级词汇",
+            "nameEn": "CET-6",
+            "icon": "📝",
+            "description": "大学英语六级考试词汇",
+            "wordCount": 2500,
+            "color": "#ec4899",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/4-CET6-顺序.json"
+        },
+        {
+            "id": "kaoyan",
+            "name": "考研词汇",
+            "nameEn": "Graduate",
+            "icon": "🎯",
+            "description": "研究生入学考试词汇",
+            "wordCount": 5500,
+            "color": "#f59e0b",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/5-考研-顺序.json"
+        },
+        {
+            "id": "toefl",
+            "name": "托福词汇",
+            "nameEn": "TOEFL",
+            "icon": "🌏",
+            "description": "托福考试核心词汇",
+            "wordCount": 5000,
+            "color": "#06b6d4",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/6-托福-顺序.json"
+        },
+        {
+            "id": "sat",
+            "name": "SAT词汇",
+            "nameEn": "SAT",
+            "icon": "📊",
+            "description": "SAT考试核心词汇",
+            "wordCount": 2500,
+            "color": "#ef4444",
+            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/7-SAT-顺序.json"
+        }
+    ]
+}

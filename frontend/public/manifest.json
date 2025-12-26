@@ -1,0 +1,16 @@
+{
+    "name": "Vocab Notebook",
+    "short_name": "生词本",
+    "description": "英语四级/六级/考研词汇生词本",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

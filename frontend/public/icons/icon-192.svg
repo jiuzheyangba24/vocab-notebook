@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="32" fill="url(#grad)"/>
+  <g transform="translate(32, 32)">
+    <!-- Book -->
+    <path d="M64 16 C40 16 16 24 16 32 L16 112 C16 120 40 128 64 128 C88 128 112 120 112 112 L112 32 C112 24 88 16 64 16 Z" fill="white" opacity="0.9"/>
+    <!-- Center line -->
+    <line x1="64" y1="24" x2="64" y2="120" stroke="url(#grad)" stroke-width="2" opacity="0.5"/>
+    <!-- Left page lines -->
+    <line x1="28" y1="48" x2="56" y2="48" stroke="#667eea" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <line x1="28" y1="64" x2="52" y2="64" stroke="#667eea" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <line x1="28" y1="80" x2="48" y2="80" stroke="#667eea" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <!-- Right page lines -->
+    <line x1="72" y1="48" x2="100" y2="48" stroke="#764ba2" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <line x1="72" y1="64" x2="96" y2="64" stroke="#764ba2" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <line x1="72" y1="80" x2="92" y2="80" stroke="#764ba2" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <!-- Bookmark -->
+    <path d="M96 8 L96 40 L88 32 L80 40 L80 8 Z" fill="#f56565"/>
+  </g>
+</svg>

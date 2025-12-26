@@ -1,9 +1,16 @@
 {
-  "name": "vocab-notebook",
-  "short_name": "Vocab",
-  "start_url": ".",
-  "scope": ".",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0f62fe"
+    "name": "Vocab Notebook",
+    "short_name": "生词本",
+    "description": "英语四级/六级/考研词汇生词本",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
 }

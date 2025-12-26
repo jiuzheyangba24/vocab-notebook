@@ -23,15 +23,15 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
 
     tasks = [
-        {"id":"T1","name":"需求分析与范围界定","start":"2025-11-27","finish":"2025-11-29","duration":2,"resources":["许海峰"]},
-        {"id":"T2","name":"设计与技术方案","start":"2025-11-29","finish":"2025-12-01","duration":2,"resources":["许海峰"]},
+        {"id":"T1","name":"需求分析与范围界定","start":"2025-11-27","finish":"2025-11-29","duration":2,"resources":["许海峰", "农豪进", "桑一凡"]},
+        {"id":"T2","name":"设计与技术方案","start":"2025-11-29","finish":"2025-12-01","duration":2,"resources":["许海峰", "桑一凡"]},
         {"id":"T3","name":"前端实现（迭代一）","start":"2025-12-01","finish":"2025-12-03","duration":2,"resources":["许海峰"]},
         {"id":"T4","name":"PWA 与离线能力完成","start":"2025-12-03","finish":"2025-12-04","duration":1,"resources":["许海峰"]},
-        {"id":"T5","name":"导入/导出与错题本完善","start":"2025-12-03","finish":"2025-12-04","duration":1,"resources":["许海峰"]},
-        {"id":"T6","name":"Android 工程初始化与同步","start":"2025-12-03","finish":"2025-12-04","duration":1,"resources":["许海峰"]},
-        {"id":"T7","name":"调试 APK 构建与真机验证","start":"2025-12-04","finish":"2025-12-06","duration":2,"resources":["许海峰"]},
-        {"id":"T8","name":"测试与缺陷修复","start":"2025-12-06","finish":"2025-12-08","duration":2,"resources":["许海峰","指导教师/同学"]},
-        {"id":"T9","name":"部署与验收文档","start":"2025-12-08","finish":"2025-12-09","duration":1,"resources":["许海峰","指导教师/同学"]},
+        {"id":"T5","name":"导入/导出与错题本完善","start":"2025-12-03","finish":"2025-12-04","duration":1,"resources":["桑一凡"]},
+        {"id":"T6","name":"Android 工程初始化与同步","start":"2025-12-03","finish":"2025-12-04","duration":1,"resources":["农豪进"]},
+        {"id":"T7","name":"调试 APK 构建与真机验证","start":"2025-12-04","finish":"2025-12-06","duration":2,"resources":["农豪进"]},
+        {"id":"T8","name":"测试与缺陷修复","start":"2025-12-06","finish":"2025-12-08","duration":2,"resources":["许海峰", "农豪进", "桑一凡"]},
+        {"id":"T9","name":"部署与验收文档","start":"2025-12-08","finish":"2025-12-09","duration":1,"resources":["农豪进", "桑一凡"]},
     ]
 
     # 构建 AOA 网络图
