@@ -1,0 +1,43 @@
+# Render Blueprint - Backend Configuration
+# This file tells Render how to deploy your backend
+
+services:
+  # Node.js Backend
+  - type: web
+    name: vocab-notebook-api
+    runtime: node
+    repo: https://github.com/jiuzheyangba24/vocab-notebook
+    branch: main
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: vocab-db
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: vocab-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: vocab-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: vocab-db
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: vocab-db
+          property: port
+      - key: JWT_SECRET
+        generateValue: true
+
+databases:
+  - name: vocab-db
+    plan: free
+    databaseName: vocab_learning_system
