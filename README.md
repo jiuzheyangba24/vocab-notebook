@@ -9,7 +9,7 @@
 
 ![License](https://img.shields.io/github/license/jiuzheyangba24/vocab-notebook)
 ![Vue](https://img.shields.io/badge/Vue-3.5-42b883)
-![Node.js](https://img.shields.io/badge/Node.js-Express-339933)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F)
 ![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Android%20%7C%20PWA-blue)
 
 </div>
@@ -78,9 +78,10 @@
 ## 🚀 快速开始
 
 ### 环境要求
-- Node.js 18+
+- Java 17+
+- Maven 3.8+
 - MySQL 8.0+
-- npm 或 pnpm
+- Node.js 18+ (仅前端)
 
 ### 1. 克隆项目
 ```bash
@@ -90,25 +91,24 @@ cd vocab-notebook
 
 ### 2. 安装依赖
 ```bash
-# 安装后端依赖
-npm install
-
 # 安装前端依赖
 cd frontend
 npm install
+cd ..
+
+# 安装后端依赖 (Maven 会自动下载)
+cd backend
+mvn clean install -DskipTests
 cd ..
 ```
 
 ### 3. 配置数据库
 ```bash
-# 创建 .env 文件
-cp .env.example .env
-
-# 编辑 .env 文件，配置 MySQL 连接信息
-# DB_HOST=localhost
-# DB_USER=root
-# DB_PASSWORD=your_password
-# DB_NAME=vocab_learning_system
+# 编辑后端配置文件
+# backend/src/main/resources/application.properties
+# spring.datasource.url=jdbc:mysql://localhost:3306/vocab_learning_system
+# spring.datasource.username=root
+# spring.datasource.password=your_password
 
 # 导入数据库结构
 mysql -u root -p < database/schema.sql
@@ -116,8 +116,9 @@ mysql -u root -p < database/schema.sql
 
 ### 4. 启动项目
 ```bash
-# 启动后端服务 (端口 3000)
-npm run start
+# 启动后端服务 (端口 8080)
+cd backend
+mvn spring-boot:run
 
 # 新开终端，启动前端开发服务器 (端口 5173)
 cd frontend
@@ -142,11 +143,11 @@ npm run dev
 - **Markdown**: marked
 
 ### 后端
-- **运行时**: Node.js
-- **框架**: Express.js
-- **数据库**: MySQL 8.0
-- **认证**: JWT (JSON Web Token)
-- **密码加密**: bcrypt
+- **语言**: Java 17
+- **框架**: Spring Boot 3.x
+- **数据库**: MySQL 8.0 + Spring Data JPA
+- **认证**: Spring Security + JWT
+- **构建工具**: Maven
 
 ### AI 服务
 - **提供商**: 阿里云 DashScope (通义千问)
@@ -184,14 +185,20 @@ vocab-notebook/
 │   │   ├── stores/           # Pinia 状态管理
 │   │   └── router/           # 路由配置
 │   └── package.json
+├── backend/                  # Spring Boot 后端项目
+│   ├── src/main/java/        # Java 源代码
+│   │   └── com/vocab/
+│   │       ├── controller/   # REST API 控制器
+│   │       ├── entity/       # 数据实体类
+│   │       ├── repository/   # 数据访问仓库
+│   │       ├── security/     # JWT 安全配置
+│   │       └── config/       # 应用配置
+│   ├── src/main/resources/   # 配置文件
+│   └── pom.xml               # Maven 依赖
 ├── database/                 # 数据库相关
-│   ├── schema.sql            # 数据库结构
-│   └── connection.js         # 数据库连接配置
-├── auth/                     # 认证模块
-│   └── middleware.js         # JWT 中间件
-├── server.js                 # Express 后端入口
+│   └── schema.sql            # 数据库结构
 ├── android/                  # Capacitor Android 工程
-└── package.json              # 后端依赖
+└── README.md
 ```
 
 ---
