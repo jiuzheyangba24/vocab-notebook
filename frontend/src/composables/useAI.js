@@ -1,20 +1,8 @@
-// AI API 服务 - 使用 DashScope (通义千问) API
-const API_KEY = 'sk-01641e0fd0564b098ccf251ad74918ff'
-const API_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions'
-
-// 系统提示词
-const SYSTEM_PROMPT = `你是一个专业的英语词汇学习助手。你的主要功能包括：
-1. 解释英语单词的含义、用法、例句
-2. 帮助用户制定背诵计划
-3. 提供学习建议和技巧
-4. 回答英语学习相关问题
-
-请用简洁友好的中文回答用户问题。如果用户询问单词，请提供：
-- 音标
-- 中文释义
-- 词性
-- 例句（中英对照）
-- 相关词汇`
+// AI API 服务 - 通过后端代理调用
+// ============================================
+// 所有 AI 请求都通过自己的后端 API 进行
+// 后端会代理调用通义千问服务
+// ============================================
 
 /**
  * 发送消息给 AI
@@ -23,21 +11,12 @@ const SYSTEM_PROMPT = `你是一个专业的英语词汇学习助手。你的主
  */
 export async function sendMessage(messages) {
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch('/api/ai/chat', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                model: 'qwen-turbo',
-                messages: [
-                    { role: 'system', content: SYSTEM_PROMPT },
-                    ...messages
-                ],
-                temperature: 0.7,
-                max_tokens: 1000
-            })
+            body: JSON.stringify({ messages })
         })
 
         if (!response.ok) {
@@ -46,7 +25,7 @@ export async function sendMessage(messages) {
         }
 
         const data = await response.json()
-        return data.choices[0].message.content
+        return data.reply
     } catch (error) {
         console.error('AI API Error:', error)
         throw new Error('AI 服务暂时不可用，请稍后重试')
@@ -59,10 +38,25 @@ export async function sendMessage(messages) {
  * @returns {Promise<string>} 单词解释
  */
 export async function lookupWord(word) {
-    const messages = [
-        { role: 'user', content: `请详细解释单词 "${word}" 的含义和用法` }
-    ]
-    return sendMessage(messages)
+    try {
+        const response = await fetch('/api/ai/lookup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ word })
+        })
+
+        if (!response.ok) {
+            throw new Error('查询失败')
+        }
+
+        const data = await response.json()
+        return data.explanation
+    } catch (error) {
+        console.error('AI Lookup Error:', error)
+        throw new Error('AI 服务暂时不可用，请稍后重试')
+    }
 }
 
 /**
@@ -99,3 +93,4 @@ export async function getLearningAdvice(stats) {
     ]
     return sendMessage(messages)
 }
+

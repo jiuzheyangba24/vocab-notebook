@@ -75,6 +75,7 @@ export default defineConfig({
     })
   ],
   server: {
+    host: true,
     port: 5173,
     proxy: {
       '/api': {
@@ -87,5 +88,5 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true
   },
-  base: '/vocab-notebook/'
+  base: process.env.NODE_ENV === 'production' ? '/vocab-notebook/' : '/'
 })

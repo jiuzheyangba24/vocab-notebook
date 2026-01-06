@@ -28,29 +28,25 @@ api.interceptors.response.use(
 )
 
 /**
- * 从外部 API 获取单词信息
+ * 从后端 API 获取单词信息
  * @param {string} word - 要查询的单词
  * @returns {Promise<object>} 单词数据
  */
 export async function fetchWordInfo(word) {
     try {
-        const response = await fetch(`https://v2.xxapi.cn/api/englishwords?word=${encodeURIComponent(word)}`)
-        const data = await response.json()
+        // 调用自己的后端词典API
+        const response = await api.get(`/dictionary/${encodeURIComponent(word)}`)
 
-        if (data.code === 200 && data.data && data.data.word) {
-            const wordData = data.data
-            return {
-                headWord: wordData.word,
-                pronunciation: wordData.ukphone || wordData.usphone || '',
-                definition: wordData.translations?.[0]?.tran_cn || '无释义',
-                sentences: wordData.sentences?.map(s => `${s.s_content} - ${s.s_cn}`) || [],
-                synonyms: wordData.synonyms?.flatMap(s => s.Hwds.map(h => h.word)) || []
-            }
+        return {
+            headWord: response.word,
+            pronunciation: response.pronunciation || '',
+            definition: response.definition || '无释义',
+            sentences: response.sentences || [],
+            synonyms: response.synonyms || []
         }
-        throw new Error('未找到该单词')
     } catch (error) {
         console.error('Fetch word info error:', error)
-        throw error
+        throw new Error('未找到该单词')
     }
 }
 

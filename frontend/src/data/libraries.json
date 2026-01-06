@@ -8,7 +8,7 @@
             "description": "初中英语必背词汇",
             "wordCount": 2000,
             "color": "#10b981",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/1-初中-顺序.json"
+            "url": "/vocabularies/chuzhong.json"
         },
         {
             "id": "gaozhong",
@@ -18,7 +18,7 @@
             "description": "高中英语必背词汇",
             "wordCount": 3500,
             "color": "#3b82f6",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/2-高中-顺序.json"
+            "url": "/vocabularies/gaozhong.json"
         },
         {
             "id": "cet4",
@@ -28,7 +28,7 @@
             "description": "大学英语四级考试词汇",
             "wordCount": 4500,
             "color": "#8b5cf6",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/3-CET4-顺序.json"
+            "url": "/vocabularies/cet4.json"
         },
         {
             "id": "cet6",
@@ -38,7 +38,7 @@
             "description": "大学英语六级考试词汇",
             "wordCount": 2500,
             "color": "#ec4899",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/4-CET6-顺序.json"
+            "url": "/vocabularies/cet6.json"
         },
         {
             "id": "kaoyan",
@@ -48,7 +48,7 @@
             "description": "研究生入学考试词汇",
             "wordCount": 5500,
             "color": "#f59e0b",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/5-考研-顺序.json"
+            "url": "/vocabularies/kaoyan.json"
         },
         {
             "id": "toefl",
@@ -58,7 +58,7 @@
             "description": "托福考试核心词汇",
             "wordCount": 5000,
             "color": "#06b6d4",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/6-托福-顺序.json"
+            "url": "/vocabularies/toefl.json"
         },
         {
             "id": "sat",
@@ -68,7 +68,7 @@
             "description": "SAT考试核心词汇",
             "wordCount": 2500,
             "color": "#ef4444",
-            "url": "https://raw.githubusercontent.com/KyleBing/english-vocabulary/master/json/7-SAT-顺序.json"
+            "url": "/vocabularies/sat.json"
         }
     ]
 }
